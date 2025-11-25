@@ -1,0 +1,9 @@
+python ig.py --username botofahmad --password ahmad12 --thread-url https://www.instagram.com/direct/t/24666856429589231/ --names 'Example 1, example 2, example 3, example 4' --headless false
+
+
+
+double 
+
+
+
+python ig.py --username botofahmad --password ahmad12 --thread-url https://www.instagram.com/direct/t/24666856429589231/ --names "Example 1, example 2, example 3, example 4" --headless false

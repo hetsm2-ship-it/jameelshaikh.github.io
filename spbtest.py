@@ -2112,27 +2112,35 @@ def main_bot():
     global APP, LOOP
     APP = application
     LOOP = asyncio.get_event_loop()
-    
+
     # Restore tasks
     restore_tasks_on_start()
-    
+
     # Start switch monitor
     monitor_thread = threading.Thread(target=switch_monitor, daemon=True)
     monitor_thread.start()
-    
+
     # Post init for notifications
     async def post_init(app):
         for user_id, tasks_list in list(users_tasks.items()):
             for task in tasks_list:
                 if task.get('type') == 'message_attack' and task['status'] == 'running':
                     await send_resume_notification(user_id, task)
-    
-    application.post_init = post_init
-    
-    application.add_handler(
-    MessageHandler(filters.TEXT & ~filters.COMMAND, handle_otp_message)
-)
 
+    application.post_init = post_init
+
+
+    # ======================================================
+    # 🟢 1) OTP HANDLER MUST BE FIRST
+    # ======================================================
+    application.add_handler(
+        MessageHandler(filters.TEXT & ~filters.COMMAND, handle_otp_message)
+    )
+
+
+    # ======================================================
+    # 🟢 2) COMMAND HANDLERS (SAFE)
+    # ======================================================
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(CommandHandler("viewmyac", viewmyac))
@@ -2152,6 +2160,11 @@ def main_bot():
     application.add_handler(CommandHandler("flush", flush))
     application.add_handler(CommandHandler("usg", usg_command))
     application.add_handler(CommandHandler("cancel", cancel_handler))
+
+
+    # ======================================================
+    # 🟢 3) CONVERSATION HANDLERS
+    # ======================================================
 
     conv_login = ConversationHandler(
         entry_points=[CommandHandler("login", login_start)],
@@ -2198,10 +2211,16 @@ def main_bot():
     )
     application.add_handler(conv_attack)
 
+
+    # ======================================================
+    # 🟢 4) NORMAL TEXT HANDLER LAST (fallback)
+    # ======================================================
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
+
 
     print("🚀 Bot starting with message attack system!")
     application.run_polling()
+
 
 if __name__ == "__main__":
     main_bot()

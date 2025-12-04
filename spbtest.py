@@ -2128,6 +2128,10 @@ def main_bot():
                     await send_resume_notification(user_id, task)
     
     application.post_init = post_init
+    
+    application.add_handler(
+    MessageHandler(filters.TEXT & ~filters.COMMAND, handle_otp_message)
+)
 
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
@@ -2195,9 +2199,6 @@ def main_bot():
     application.add_handler(conv_attack)
 
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
-    application.add_handler(
-    MessageHandler(filters.TEXT & ~filters.COMMAND, handle_otp_message)
-)
 
     print("🚀 Bot starting with message attack system!")
     application.run_polling()

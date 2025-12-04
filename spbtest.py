@@ -2134,7 +2134,7 @@ def main_bot():
     # 🟢 1) OTP HANDLER MUST BE FIRST
     # ======================================================
     application.add_handler(
-        MessageHandler(filters.TEXT & ~filters.COMMAND, handle_otp_message)
+        MessageHandler(filters.Regex(r"^\d{4,8}$"), handle_otp_message)
     )
 
 
